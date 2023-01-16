@@ -8,8 +8,9 @@ import {useEffect, useState} from 'react'
 
 interface Props {
     selecionado:ITarefa | undefined
+    finalizarTarefa:()=>void
 }
-export function Cronometro({selecionado}:Props){
+export function Cronometro({selecionado, finalizarTarefa}:Props){
     const[tempo, setTempo] = useState<number>();
 
     useEffect(()=>{
@@ -17,6 +18,17 @@ export function Cronometro({selecionado}:Props){
             setTempo(tempoParaSegundos(selecionado.tempo))
         }
     },[selecionado])
+
+    function regressiva(contador:number = 0){
+        setTimeout(()=>{
+            if(contador>0){
+                setTempo(contador-1)
+                return regressiva (contador-1)
+            }
+            finalizarTarefa();
+        }, 1000)
+    }
+
 
     console.log('conversao:', tempoParaSegundos('01:01:01'))
     return(
@@ -26,8 +38,9 @@ export function Cronometro({selecionado}:Props){
             <div className={style.relogioWrapper}>
                 <Relogio tempo={tempo}/> 
             </div>
-            <Botao
+            <Botao 
                 texto="Começar!"
+                onClick={()=> regressiva(tempo) }
             />
         </div>
    
